@@ -7,7 +7,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Cat Meals" />
   <title>Cat Meal Calculator</title>
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐱</text></svg>" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body {
@@ -17,11 +16,13 @@
       min-height: 100vh;
       padding: 16px;
       padding-top: env(safe-area-inset-top, 16px);
+      padding-bottom: 40px;
     }
     .header { text-align: center; margin-bottom: 20px; padding-top: 12px; }
     .header .emoji { font-size: 48px; }
     .header h1 { font-size: 22px; color: #6B3A00; margin-top: 4px; }
     .header p { font-size: 13px; color: #A07050; margin-top: 2px; }
+
     .card {
       background: #fff;
       border-radius: 16px;
@@ -30,6 +31,7 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.06);
     }
     .card h2 { font-size: 16px; color: #6B3A00; margin-bottom: 12px; }
+
     .form-group { margin-bottom: 12px; }
     .form-group:last-child { margin-bottom: 0; }
     .form-group label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 4px; }
@@ -51,53 +53,138 @@
       padding-right: 32px;
     }
     .form-group input:focus, .form-group select:focus { outline: none; border-color: #E8A54B; }
+
+    .daily-cal-display {
+      background: linear-gradient(135deg, #FFF5E6, #FFE8CC);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      margin-top: 12px;
+    }
+    .daily-cal-display .label { font-size: 12px; color: #A07050; }
+    .daily-cal-display .value { font-size: 28px; font-weight: 800; color: #C06A10; }
+    .daily-cal-display .unit { font-size: 14px; color: #C06A10; font-weight: 600; }
+
+    .food-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1.5px solid #EEE;
+      background: #FAFAFA;
+      transition: all 0.2s;
+    }
+    .food-row.locked {
+      border-color: #E8A54B;
+      background: #FFFBF5;
+    }
+    .food-row.calculated {
+      border-color: #A8D8A8;
+      background: #F5FFF5;
+    }
+    .food-row .icon { font-size: 26px; flex-shrink: 0; }
+    .food-row .info { flex: 1; }
+    .food-row .food-name { font-size: 13px; font-weight: 600; color: #666; }
+    .food-row .food-input-row { display: flex; align-items: center; gap: 4px; margin-top: 3px; }
+    .food-row input.grams-input {
+      width: 80px;
+      padding: 6px 8px;
+      border: 1.5px solid #DDD;
+      border-radius: 8px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #333;
+      text-align: center;
+      background: #fff;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .food-row input.grams-input:focus { outline: none; border-color: #E8A54B; }
+    .food-row input.grams-input:disabled {
+      background: #E8FFE8;
+      color: #2A7A2A;
+      border-color: #A8D8A8;
+    }
+    .food-row .grams-label { font-size: 14px; color: #999; font-weight: 600; }
+    .food-row .kcal-display { font-size: 12px; color: #A07050; margin-top: 2px; }
+
+    .lock-btn {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      border: 1.5px solid #DDD;
+      background: #F5F5F5;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .lock-btn.active {
+      background: #E8A54B;
+      border-color: #D09030;
+    }
+    .lock-btn:active { transform: scale(0.92); }
+
+    .hint {
+      text-align: center;
+      font-size: 12px;
+      color: #BBB;
+      line-height: 1.4;
+    }
+
+    .cal-bar-container { margin-top: 14px; }
+    .cal-bar-labels { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+    .cal-bar-bg {
+      height: 10px;
+      background: #EEE;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .cal-bar-fill {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.3s, background 0.3s;
+    }
+    .cal-bar-diff { text-align: center; font-size: 12px; margin-top: 6px; font-weight: 600; }
+
     .stepper { display: flex; align-items: center; gap: 16px; }
     .stepper button {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: #FFF0DB; border: none; font-size: 22px; font-weight: bold;
+      width: 38px; height: 38px; border-radius: 50%;
+      background: #FFF0DB; border: none; font-size: 20px; font-weight: bold;
       color: #6B3A00; cursor: pointer; display: flex; align-items: center; justify-content: center;
     }
     .stepper button:active { background: #FFDFA0; }
-    .stepper span { font-size: 26px; font-weight: bold; color: #6B3A00; min-width: 30px; text-align: center; }
-    .toggle-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-    .toggle-row:last-child { margin-bottom: 0; }
-    .toggle-row .meal-label { font-size: 13px; font-weight: 600; color: #666; width: 56px; flex-shrink: 0; }
-    .toggle-group { display: flex; flex: 1; border-radius: 10px; overflow: hidden; border: 1.5px solid #DDD; }
-    .toggle-btn {
-      flex: 1; padding: 8px 0; font-size: 13px; font-weight: 600;
-      border: none; cursor: pointer; transition: all 0.2s;
-      background: #FAFAFA; color: #999;
+    .stepper span { font-size: 24px; font-weight: bold; color: #6B3A00; min-width: 30px; text-align: center; }
+
+    .meal-breakdown { display: flex; gap: 8px; margin-top: 10px; }
+    .meal-box {
+      flex: 1;
+      background: #FAFAFA;
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #EEE;
     }
-    .toggle-btn.active-kibble { background: #E8A54B; color: #fff; }
-    .toggle-btn.active-wet { background: #E07B3A; color: #fff; }
-    .toggle-btn:active { opacity: 0.8; }
-    .results-card {
-      background: linear-gradient(135deg, #FFF0DB, #FFE0C0);
-      border-radius: 16px; padding: 16px; margin-bottom: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    .meal-box .meal-icon { font-size: 22px; }
+    .meal-box .meal-val { font-size: 22px; font-weight: 700; margin-top: 2px; }
+    .meal-box .meal-label { font-size: 11px; color: #999; margin-top: 1px; }
+    .meal-box.kibble-box .meal-val { color: #B08020; }
+    .meal-box.wet-box .meal-val { color: #C06030; }
+
+    .warning-badge {
+      display: block;
+      background: #FFEEEE;
+      color: #CC3333;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      margin-top: 8px;
+      text-align: center;
     }
-    .results-card h2 { font-size: 16px; color: #6B3A00; margin-bottom: 12px; }
-    .summary-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
-    .summary-row .val { font-weight: 700; color: #6B3A00; }
-    .meal-result {
-      background: #fff; border-radius: 12px; padding: 12px; margin-top: 8px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .meal-result .left { display: flex; align-items: center; gap: 8px; }
-    .meal-result .name { font-weight: 600; font-size: 14px; }
-    .meal-result .badge {
-      font-size: 11px; padding: 2px 8px; border-radius: 20px;
-      background: #FFF0DB; color: #A06A20;
-    }
-    .meal-result .grams { font-size: 22px; font-weight: 700; color: #C06A10; }
-    .meal-result .warn { font-size: 12px; color: #D44; }
-    .totals { background: #fff; border-radius: 12px; padding: 12px; margin-top: 10px; }
-    .totals .row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
-    .totals .row:last-child { margin-bottom: 0; }
-    .totals .row .val-k { font-weight: 700; color: #B08020; }
-    .totals .row .val-w { font-weight: 700; color: #C06030; }
+
     .footer { text-align: center; font-size: 11px; color: #BBB; padding: 8px 0 20px; }
-    .no-result { text-align: center; padding: 24px; color: #C0A080; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -105,7 +192,7 @@
   <div class="header">
     <div class="emoji">🐱</div>
     <h1>Cat Meal Calculator</h1>
-    <p>Calculate the perfect portion for every meal</p>
+    <p>Lock what you know, calculate the rest</p>
   </div>
 
   <div class="card">
@@ -123,6 +210,56 @@
         <option value="1.1">Senior (7+ yrs)</option>
       </select>
     </div>
+    <div id="dailyCalDisplay"></div>
+  </div>
+
+  <div class="card">
+    <h2>🍽️ Food Info</h2>
+    <div class="form-group">
+      <label>Kibble (kcal per kg of food)</label>
+      <input type="number" id="kibbleCal" inputmode="numeric" placeholder="e.g. 3500" />
+    </div>
+    <div class="form-group">
+      <label>Wet Food (kcal per kg of food)</label>
+      <input type="number" id="wetCal" inputmode="numeric" placeholder="e.g. 800" />
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📋 Daily Plan</h2>
+    <p class="hint" style="margin-bottom:12px;">Tap 🔒 to lock a value — the other auto-calculates</p>
+
+    <div class="food-row" id="kibbleRow">
+      <div class="icon">🥜</div>
+      <div class="info">
+        <div class="food-name">Kibble</div>
+        <div class="food-input-row">
+          <input type="number" class="grams-input" id="kibbleGrams" inputmode="numeric" placeholder="0" />
+          <span class="grams-label">g / day</span>
+        </div>
+        <div class="kcal-display" id="kibbleKcalDisplay">— kcal</div>
+      </div>
+      <button class="lock-btn" id="kibbleLock">🔓</button>
+    </div>
+
+    <div class="food-row" id="wetRow">
+      <div class="icon">🥫</div>
+      <div class="info">
+        <div class="food-name">Wet Food</div>
+        <div class="food-input-row">
+          <input type="number" class="grams-input" id="wetGrams" inputmode="numeric" placeholder="0" />
+          <span class="grams-label">g / day</span>
+        </div>
+        <div class="kcal-display" id="wetKcalDisplay">— kcal</div>
+      </div>
+      <button class="lock-btn" id="wetLock">🔓</button>
+    </div>
+
+    <div class="cal-bar-container" id="calBar"></div>
+  </div>
+
+  <div class="card">
+    <h2>🥣 Per Meal</h2>
     <div class="form-group">
       <label>Meals per Day</label>
       <div class="stepper">
@@ -131,129 +268,194 @@
         <button id="mealPlus">+</button>
       </div>
     </div>
+    <div id="mealBreakdown"></div>
   </div>
-
-  <div class="card">
-    <h2>🍽️ Food Calories</h2>
-    <div class="form-group">
-      <label>Kibble (kcal per kg)</label>
-      <input type="number" id="kibbleCal" inputmode="numeric" placeholder="e.g. 3500" />
-    </div>
-    <div class="form-group">
-      <label>Wet Food (kcal per kg)</label>
-      <input type="number" id="wetCal" inputmode="numeric" placeholder="e.g. 800" />
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>🥣 Choose Food per Meal</h2>
-    <div id="mealToggles"></div>
-  </div>
-
-  <div id="resultsContainer"></div>
 
   <div class="footer">Based on RER = 70 × weight<sup>0.75</sup> · Always consult your vet.</div>
 
 <script>
+  let lockedFood = null;
   let numMeals = 2;
-  let mealTypes = ['kibble', 'wet'];
 
-  const $ = (id) => document.getElementById(id);
+  const $ = id => document.getElementById(id);
 
-  function renderToggles() {
-    while (mealTypes.length < numMeals) mealTypes.push('kibble');
-    mealTypes = mealTypes.slice(0, numMeals);
-    $('mealCount').textContent = numMeals;
-
-    let html = '';
-    for (let i = 0; i < numMeals; i++) {
-      const isK = mealTypes[i] === 'kibble';
-      html += `
-        <div class="toggle-row">
-          <span class="meal-label">Meal ${i + 1}</span>
-          <div class="toggle-group">
-            <button class="toggle-btn ${isK ? 'active-kibble' : ''}" onclick="setType(${i},'kibble')">🥜 Kibble</button>
-            <button class="toggle-btn ${!isK ? 'active-wet' : ''}" onclick="setType(${i},'wet')">🥫 Wet Food</button>
-          </div>
-        </div>`;
-    }
-    $('mealToggles').innerHTML = html;
+  function getDailyCal() {
+    const w = parseFloat($('weight').value);
+    const factor = parseFloat($('lifeStage').value);
+    if (!w || w <= 0) return null;
+    return 70 * Math.pow(w, 0.75) * factor;
   }
 
-  function setType(i, type) {
-    mealTypes[i] = type;
-    renderToggles();
+  function toggleLock(food) {
+    if (lockedFood === food) {
+      lockedFood = null;
+    } else {
+      lockedFood = food;
+    }
+    updateLockUI();
     calculate();
   }
 
-  function calculate() {
-    const w = parseFloat($('weight').value);
-    const factor = parseFloat($('lifeStage').value);
-    const kCal = parseFloat($('kibbleCal').value);
-    const wCal = parseFloat($('wetCal').value);
+  function updateLockUI() {
+    const kBtn = $('kibbleLock');
+    const wBtn = $('wetLock');
+    const kRow = $('kibbleRow');
+    const wRow = $('wetRow');
+    const kInput = $('kibbleGrams');
+    const wInput = $('wetGrams');
 
-    if (!w || w <= 0) {
-      $('resultsContainer').innerHTML = '<div class="card no-result">Enter your cat\'s weight to see results 🐾</div>';
-      return;
+    kBtn.classList.remove('active');
+    wBtn.classList.remove('active');
+    kRow.classList.remove('locked', 'calculated');
+    wRow.classList.remove('locked', 'calculated');
+    kInput.disabled = false;
+    wInput.disabled = false;
+    kBtn.textContent = '🔓';
+    wBtn.textContent = '🔓';
+
+    if (lockedFood === 'kibble') {
+      kBtn.classList.add('active');
+      kBtn.textContent = '🔒';
+      kRow.classList.add('locked');
+      wRow.classList.add('calculated');
+      wInput.disabled = true;
+    } else if (lockedFood === 'wet') {
+      wBtn.classList.add('active');
+      wBtn.textContent = '🔒';
+      wRow.classList.add('locked');
+      kRow.classList.add('calculated');
+      kInput.disabled = true;
     }
-
-    const rer = 70 * Math.pow(w, 0.75);
-    const dailyCal = rer * factor;
-    const calPerMeal = dailyCal / numMeals;
-
-    let mealsHtml = '';
-    let totalKibble = 0;
-    let totalWet = 0;
-
-    for (let i = 0; i < numMeals; i++) {
-      const type = mealTypes[i];
-      const cal = type === 'kibble' ? kCal : wCal;
-      let portionHtml = '';
-      if (cal && cal > 0) {
-        const g = (calPerMeal / cal) * 1000;
-        if (type === 'kibble') totalKibble += g;
-        else totalWet += g;
-        portionHtml = `<span class="grams">${Math.round(g)}g</span>`;
-      } else {
-        portionHtml = `<span class="warn">Enter kcal/kg</span>`;
-      }
-      const emoji = type === 'kibble' ? '🥜 Kibble' : '🥫 Wet';
-      mealsHtml += `
-        <div class="meal-result">
-          <div class="left">
-            <span class="name">Meal ${i + 1}</span>
-            <span class="badge">${emoji}</span>
-          </div>
-          ${portionHtml}
-        </div>`;
-    }
-
-    $('resultsContainer').innerHTML = `
-      <div class="results-card">
-        <h2>📊 Results</h2>
-        <div class="summary-row"><span>Daily calories needed:</span><span class="val">${Math.round(dailyCal)} kcal</span></div>
-        <div class="summary-row"><span>Calories per meal:</span><span class="val">${Math.round(calPerMeal)} kcal</span></div>
-        ${mealsHtml}
-        <div class="totals">
-          <div class="row"><span>Total kibble / day:</span><span class="val-k">${Math.round(totalKibble)}g</span></div>
-          <div class="row"><span>Total wet food / day:</span><span class="val-w">${Math.round(totalWet)}g</span></div>
-        </div>
-      </div>`;
   }
 
-  $('mealMinus').addEventListener('click', () => {
-    if (numMeals > 1) { numMeals--; renderToggles(); calculate(); }
-  });
-  $('mealPlus').addEventListener('click', () => {
-    if (numMeals < 10) { numMeals++; renderToggles(); calculate(); }
-  });
+  function calculate() {
+    const dailyCal = getDailyCal();
+
+    if (dailyCal) {
+      $('dailyCalDisplay').innerHTML =
+        '<div class="daily-cal-display">' +
+          '<div class="label">Daily calories needed</div>' +
+          '<div class="value">' + Math.round(dailyCal) + ' <span class="unit">kcal</span></div>' +
+        '</div>';
+    } else {
+      $('dailyCalDisplay').innerHTML = '';
+    }
+
+    const kCalPerKg = parseFloat($('kibbleCal').value) || 0;
+    const wCalPerKg = parseFloat($('wetCal').value) || 0;
+
+    if (lockedFood === 'kibble' && dailyCal && wCalPerKg > 0) {
+      const kG = parseFloat($('kibbleGrams').value) || 0;
+      const kCal = (kG / 1000) * kCalPerKg;
+      const remaining = dailyCal - kCal;
+      const wG = Math.max(0, (remaining / wCalPerKg) * 1000);
+      $('wetGrams').value = Math.round(wG);
+    } else if (lockedFood === 'wet' && dailyCal && kCalPerKg > 0) {
+      const wG = parseFloat($('wetGrams').value) || 0;
+      const wCal = (wG / 1000) * wCalPerKg;
+      const remaining = dailyCal - wCal;
+      const kG = Math.max(0, (remaining / kCalPerKg) * 1000);
+      $('kibbleGrams').value = Math.round(kG);
+    }
+
+    const kGrams = parseFloat($('kibbleGrams').value) || 0;
+    const wGrams = parseFloat($('wetGrams').value) || 0;
+    const kCal = (kGrams / 1000) * kCalPerKg;
+    const wCal = (wGrams / 1000) * wCalPerKg;
+    const totalCal = kCal + wCal;
+
+    $('kibbleKcalDisplay').textContent = kCalPerKg > 0 ? Math.round(kCal) + ' kcal' : '— kcal';
+    $('wetKcalDisplay').textContent = wCalPerKg > 0 ? Math.round(wCal) + ' kcal' : '— kcal';
+
+    if (dailyCal) {
+      const pct = Math.min(110, (totalCal / dailyCal) * 100);
+      const diff = totalCal - dailyCal;
+      let barColor, diffText, diffColor;
+
+      if (totalCal === 0) {
+        barColor = '#DDD';
+        diffText = 'Enter food amounts above';
+        diffColor = '#BBB';
+      } else if (Math.abs(diff) < 5) {
+        barColor = '#6BBF6B';
+        diffText = '✅ Perfect!';
+        diffColor = '#4A9A4A';
+      } else if (diff > 0) {
+        barColor = '#E05555';
+        diffText = '⚠️ ' + Math.round(diff) + ' kcal over target';
+        diffColor = '#CC3333';
+      } else {
+        barColor = '#E8A54B';
+        diffText = Math.round(Math.abs(diff)) + ' kcal remaining';
+        diffColor = '#A07050';
+      }
+
+      $('calBar').innerHTML =
+        '<div class="cal-bar-labels">' +
+          '<span style="font-weight:700;color:' + diffColor + '">' + Math.round(totalCal) + ' kcal</span>' +
+          '<span style="color:#999">Target: ' + Math.round(dailyCal) + ' kcal</span>' +
+        '</div>' +
+        '<div class="cal-bar-bg"><div class="cal-bar-fill" style="width:' + Math.min(100, pct) + '%;background:' + barColor + '"></div></div>' +
+        '<div class="cal-bar-diff" style="color:' + diffColor + '">' + diffText + '</div>';
+    } else {
+      $('calBar').innerHTML = '<div class="hint" style="margin-top:8px">Enter cat weight to see calorie target</div>';
+    }
+
+    let mealHtml = '<div class="meal-breakdown">';
+    let hasFood = false;
+    if (kGrams > 0) {
+      hasFood = true;
+      mealHtml +=
+        '<div class="meal-box kibble-box">' +
+          '<div class="meal-icon">🥜</div>' +
+          '<div class="meal-val">' + Math.round(kGrams / numMeals) + 'g</div>' +
+          '<div class="meal-label">kibble / meal</div>' +
+        '</div>';
+    }
+    if (wGrams > 0) {
+      hasFood = true;
+      mealHtml +=
+        '<div class="meal-box wet-box">' +
+          '<div class="meal-icon">🥫</div>' +
+          '<div class="meal-val">' + Math.round(wGrams / numMeals) + 'g</div>' +
+          '<div class="meal-label">wet food / meal</div>' +
+        '</div>';
+    }
+    if (!hasFood) {
+      mealHtml += '<div class="hint" style="width:100%;padding:12px">Set food amounts above to see portions</div>';
+    }
+    mealHtml += '</div>';
+
+    if (lockedFood && dailyCal) {
+      const lockedG = lockedFood === 'kibble' ? kGrams : wGrams;
+      const lockedCPK = lockedFood === 'kibble' ? kCalPerKg : wCalPerKg;
+      const lockedCal = (lockedG / 1000) * lockedCPK;
+      if (lockedCal > dailyCal) {
+        mealHtml += '<div class="warning-badge">⚠️ Locked food alone exceeds daily calorie target</div>';
+      }
+    }
+
+    $('mealBreakdown').innerHTML = mealHtml;
+  }
+
+  $('kibbleLock').addEventListener('click', function() { toggleLock('kibble'); });
+  $('wetLock').addEventListener('click', function() { toggleLock('wet'); });
 
   $('weight').addEventListener('input', calculate);
   $('lifeStage').addEventListener('change', calculate);
   $('kibbleCal').addEventListener('input', calculate);
   $('wetCal').addEventListener('input', calculate);
+  $('kibbleGrams').addEventListener('input', calculate);
+  $('wetGrams').addEventListener('input', calculate);
 
-  renderToggles();
+  $('mealMinus').addEventListener('click', function() {
+    if (numMeals > 1) { numMeals--; $('mealCount').textContent = numMeals; calculate(); }
+  });
+  $('mealPlus').addEventListener('click', function() {
+    if (numMeals < 10) { numMeals++; $('mealCount').textContent = numMeals; calculate(); }
+  });
+
+  updateLockUI();
   calculate();
 </script>
 </body>
