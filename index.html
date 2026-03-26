@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Cat Meals" />
+  <title>Cat Meal Calculator</title>
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐱</text></svg>" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #FFF8F0;
+      color: #3D2C1E;
+      min-height: 100vh;
+      padding: 16px;
+      padding-top: env(safe-area-inset-top, 16px);
+    }
+    .header { text-align: center; margin-bottom: 20px; padding-top: 12px; }
+    .header .emoji { font-size: 48px; }
+    .header h1 { font-size: 22px; color: #6B3A00; margin-top: 4px; }
+    .header p { font-size: 13px; color: #A07050; margin-top: 2px; }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .card h2 { font-size: 16px; color: #6B3A00; margin-bottom: 12px; }
+    .form-group { margin-bottom: 12px; }
+    .form-group:last-child { margin-bottom: 0; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 4px; }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid #DDD;
+      border-radius: 10px;
+      font-size: 16px;
+      background: #FAFAFA;
+      color: #333;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .form-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L2 5h12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+    }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: #E8A54B; }
+    .stepper { display: flex; align-items: center; gap: 16px; }
+    .stepper button {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #FFF0DB; border: none; font-size: 22px; font-weight: bold;
+      color: #6B3A00; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .stepper button:active { background: #FFDFA0; }
+    .stepper span { font-size: 26px; font-weight: bold; color: #6B3A00; min-width: 30px; text-align: center; }
+    .toggle-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .toggle-row:last-child { margin-bottom: 0; }
+    .toggle-row .meal-label { font-size: 13px; font-weight: 600; color: #666; width: 56px; flex-shrink: 0; }
+    .toggle-group { display: flex; flex: 1; border-radius: 10px; overflow: hidden; border: 1.5px solid #DDD; }
+    .toggle-btn {
+      flex: 1; padding: 8px 0; font-size: 13px; font-weight: 600;
+      border: none; cursor: pointer; transition: all 0.2s;
+      background: #FAFAFA; color: #999;
+    }
+    .toggle-btn.active-kibble { background: #E8A54B; color: #fff; }
+    .toggle-btn.active-wet { background: #E07B3A; color: #fff; }
+    .toggle-btn:active { opacity: 0.8; }
+    .results-card {
+      background: linear-gradient(135deg, #FFF0DB, #FFE0C0);
+      border-radius: 16px; padding: 16px; margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .results-card h2 { font-size: 16px; color: #6B3A00; margin-bottom: 12px; }
+    .summary-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+    .summary-row .val { font-weight: 700; color: #6B3A00; }
+    .meal-result {
+      background: #fff; border-radius: 12px; padding: 12px; margin-top: 8px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .meal-result .left { display: flex; align-items: center; gap: 8px; }
+    .meal-result .name { font-weight: 600; font-size: 14px; }
+    .meal-result .badge {
+      font-size: 11px; padding: 2px 8px; border-radius: 20px;
+      background: #FFF0DB; color: #A06A20;
+    }
+    .meal-result .grams { font-size: 22px; font-weight: 700; color: #C06A10; }
+    .meal-result .warn { font-size: 12px; color: #D44; }
+    .totals { background: #fff; border-radius: 12px; padding: 12px; margin-top: 10px; }
+    .totals .row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
+    .totals .row:last-child { margin-bottom: 0; }
+    .totals .row .val-k { font-weight: 700; color: #B08020; }
+    .totals .row .val-w { font-weight: 700; color: #C06030; }
+    .footer { text-align: center; font-size: 11px; color: #BBB; padding: 8px 0 20px; }
+    .no-result { text-align: center; padding: 24px; color: #C0A080; font-size: 14px; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="emoji">🐱</div>
+    <h1>Cat Meal Calculator</h1>
+    <p>Calculate the perfect portion for every meal</p>
+  </div>
+
+  <div class="card">
+    <h2>🐾 Cat Info</h2>
+    <div class="form-group">
+      <label>Weight (kg)</label>
+      <input type="number" id="weight" inputmode="decimal" placeholder="e.g. 4.5" step="0.1" min="0.1" />
+    </div>
+    <div class="form-group">
+      <label>Life Stage</label>
+      <select id="lifeStage">
+        <option value="2.5">Kitten (&lt;1 yr)</option>
+        <option value="1.2" selected>Adult Indoor / Neutered</option>
+        <option value="1.4">Adult Active</option>
+        <option value="1.1">Senior (7+ yrs)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Meals per Day</label>
+      <div class="stepper">
+        <button id="mealMinus">−</button>
+        <span id="mealCount">2</span>
+        <button id="mealPlus">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🍽️ Food Calories</h2>
+    <div class="form-group">
+      <label>Kibble (kcal per kg)</label>
+      <input type="number" id="kibbleCal" inputmode="numeric" placeholder="e.g. 3500" />
+    </div>
+    <div class="form-group">
+      <label>Wet Food (kcal per kg)</label>
+      <input type="number" id="wetCal" inputmode="numeric" placeholder="e.g. 800" />
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🥣 Choose Food per Meal</h2>
+    <div id="mealToggles"></div>
+  </div>
+
+  <div id="resultsContainer"></div>
+
+  <div class="footer">Based on RER = 70 × weight<sup>0.75</sup> · Always consult your vet.</div>
+
+<script>
+  let numMeals = 2;
+  let mealTypes = ['kibble', 'wet'];
+
+  const $ = (id) => document.getElementById(id);
+
+  function renderToggles() {
+    while (mealTypes.length < numMeals) mealTypes.push('kibble');
+    mealTypes = mealTypes.slice(0, numMeals);
+    $('mealCount').textContent = numMeals;
+
+    let html = '';
+    for (let i = 0; i < numMeals; i++) {
+      const isK = mealTypes[i] === 'kibble';
+      html += `
+        <div class="toggle-row">
+          <span class="meal-label">Meal ${i + 1}</span>
+          <div class="toggle-group">
+            <button class="toggle-btn ${isK ? 'active-kibble' : ''}" onclick="setType(${i},'kibble')">🥜 Kibble</button>
+            <button class="toggle-btn ${!isK ? 'active-wet' : ''}" onclick="setType(${i},'wet')">🥫 Wet Food</button>
+          </div>
+        </div>`;
+    }
+    $('mealToggles').innerHTML = html;
+  }
+
+  function setType(i, type) {
+    mealTypes[i] = type;
+    renderToggles();
+    calculate();
+  }
+
+  function calculate() {
+    const w = parseFloat($('weight').value);
+    const factor = parseFloat($('lifeStage').value);
+    const kCal = parseFloat($('kibbleCal').value);
+    const wCal = parseFloat($('wetCal').value);
+
+    if (!w || w <= 0) {
+      $('resultsContainer').innerHTML = '<div class="card no-result">Enter your cat\'s weight to see results 🐾</div>';
+      return;
+    }
+
+    const rer = 70 * Math.pow(w, 0.75);
+    const dailyCal = rer * factor;
+    const calPerMeal = dailyCal / numMeals;
+
+    let mealsHtml = '';
+    let totalKibble = 0;
+    let totalWet = 0;
+
+    for (let i = 0; i < numMeals; i++) {
+      const type = mealTypes[i];
+      const cal = type === 'kibble' ? kCal : wCal;
+      let portionHtml = '';
+      if (cal && cal > 0) {
+        const g = (calPerMeal / cal) * 1000;
+        if (type === 'kibble') totalKibble += g;
+        else totalWet += g;
+        portionHtml = `<span class="grams">${Math.round(g)}g</span>`;
+      } else {
+        portionHtml = `<span class="warn">Enter kcal/kg</span>`;
+      }
+      const emoji = type === 'kibble' ? '🥜 Kibble' : '🥫 Wet';
+      mealsHtml += `
+        <div class="meal-result">
+          <div class="left">
+            <span class="name">Meal ${i + 1}</span>
+            <span class="badge">${emoji}</span>
+          </div>
+          ${portionHtml}
+        </div>`;
+    }
+
+    $('resultsContainer').innerHTML = `
+      <div class="results-card">
+        <h2>📊 Results</h2>
+        <div class="summary-row"><span>Daily calories needed:</span><span class="val">${Math.round(dailyCal)} kcal</span></div>
+        <div class="summary-row"><span>Calories per meal:</span><span class="val">${Math.round(calPerMeal)} kcal</span></div>
+        ${mealsHtml}
+        <div class="totals">
+          <div class="row"><span>Total kibble / day:</span><span class="val-k">${Math.round(totalKibble)}g</span></div>
+          <div class="row"><span>Total wet food / day:</span><span class="val-w">${Math.round(totalWet)}g</span></div>
+        </div>
+      </div>`;
+  }
+
+  $('mealMinus').addEventListener('click', () => {
+    if (numMeals > 1) { numMeals--; renderToggles(); calculate(); }
+  });
+  $('mealPlus').addEventListener('click', () => {
+    if (numMeals < 10) { numMeals++; renderToggles(); calculate(); }
+  });
+
+  $('weight').addEventListener('input', calculate);
+  $('lifeStage').addEventListener('change', calculate);
+  $('kibbleCal').addEventListener('input', calculate);
+  $('wetCal').addEventListener('input', calculate);
+
+  renderToggles();
+  calculate();
+</script>
+</body>
+</html>
