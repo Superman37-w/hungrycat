@@ -16,7 +16,7 @@
       min-height: 100vh;
       padding: 16px;
       padding-top: env(safe-area-inset-top, 16px);
-      padding-bottom: 40px;
+      padding-bottom: 60px;
     }
     .header { text-align: center; margin-bottom: 20px; padding-top: 12px; }
     .header .emoji { font-size: 48px; }
@@ -76,14 +76,8 @@
       background: #FAFAFA;
       transition: all 0.2s;
     }
-    .food-row.locked {
-      border-color: #E8A54B;
-      background: #FFFBF5;
-    }
-    .food-row.calculated {
-      border-color: #A8D8A8;
-      background: #F5FFF5;
-    }
+    .food-row.locked { border-color: #E8A54B; background: #FFFBF5; }
+    .food-row.calculated { border-color: #A8D8A8; background: #F5FFF5; }
     .food-row .icon { font-size: 26px; flex-shrink: 0; }
     .food-row .info { flex: 1; }
     .food-row .food-name { font-size: 13px; font-weight: 600; color: #666; }
@@ -102,11 +96,7 @@
       -webkit-appearance: none;
     }
     .food-row input.grams-input:focus { outline: none; border-color: #E8A54B; }
-    .food-row input.grams-input:disabled {
-      background: #E8FFE8;
-      color: #2A7A2A;
-      border-color: #A8D8A8;
-    }
+    .food-row input.grams-input:disabled { background: #E8FFE8; color: #2A7A2A; border-color: #A8D8A8; }
     .food-row .grams-label { font-size: 14px; color: #999; font-weight: 600; }
     .food-row .kcal-display { font-size: 12px; color: #A07050; margin-top: 2px; }
 
@@ -121,10 +111,7 @@
       flex-shrink: 0;
       transition: all 0.2s;
     }
-    .lock-btn.active {
-      background: #E8A54B;
-      border-color: #D09030;
-    }
+    .lock-btn.active { background: #E8A54B; border-color: #D09030; }
     .lock-btn:active { transform: scale(0.92); }
 
     .hint {
@@ -136,17 +123,8 @@
 
     .cal-bar-container { margin-top: 14px; }
     .cal-bar-labels { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
-    .cal-bar-bg {
-      height: 10px;
-      background: #EEE;
-      border-radius: 5px;
-      overflow: hidden;
-    }
-    .cal-bar-fill {
-      height: 100%;
-      border-radius: 5px;
-      transition: width 0.3s, background 0.3s;
-    }
+    .cal-bar-bg { height: 10px; background: #EEE; border-radius: 5px; overflow: hidden; }
+    .cal-bar-fill { height: 100%; border-radius: 5px; transition: width 0.3s, background 0.3s; }
     .cal-bar-diff { text-align: center; font-size: 12px; margin-top: 6px; font-weight: 600; }
 
     .stepper { display: flex; align-items: center; gap: 16px; }
@@ -158,25 +136,64 @@
     .stepper button:active { background: #FFDFA0; }
     .stepper span { font-size: 24px; font-weight: bold; color: #6B3A00; min-width: 30px; text-align: center; }
 
-    .meal-breakdown { display: flex; gap: 8px; margin-top: 10px; }
-    .meal-box {
-      flex: 1;
+    .meal-card {
       background: #FAFAFA;
       border-radius: 12px;
-      padding: 10px;
-      text-align: center;
+      padding: 12px;
+      margin-bottom: 8px;
       border: 1px solid #EEE;
     }
-    .meal-box .meal-icon { font-size: 22px; }
-    .meal-box .meal-val { font-size: 22px; font-weight: 700; margin-top: 2px; }
-    .meal-box .meal-label { font-size: 11px; color: #999; margin-top: 1px; }
-    .meal-box.kibble-box .meal-val { color: #B08020; }
-    .meal-box.wet-box .meal-val { color: #C06030; }
+    .meal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .meal-title { font-size: 14px; font-weight: 700; color: #6B3A00; }
+    .meal-type-btns { display: flex; gap: 4px; }
+    .meal-type-btn {
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1.5px solid #DDD;
+      background: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .meal-type-btn:active { transform: scale(0.95); }
+    .meal-type-btn.active-kibble { background: #FFF5E0; border-color: #D4A84B; }
+    .meal-type-btn.active-wet { background: #FFEDE0; border-color: #D47040; }
+    .meal-type-btn.active-both { background: #F0E8FF; border-color: #9B7ED8; }
+
+    .meal-portions { display: flex; gap: 8px; }
+    .portion-box {
+      flex: 1;
+      text-align: center;
+      padding: 8px;
+      border-radius: 10px;
+      background: #fff;
+      border: 1px solid #EEE;
+    }
+    .portion-icon { font-size: 20px; }
+    .portion-val { font-size: 20px; font-weight: 700; margin-top: 2px; }
+    .portion-val.kibble-color { color: #B08020; }
+    .portion-val.wet-color { color: #C06030; }
+    .portion-label { font-size: 11px; color: #999; }
 
     .warning-badge {
       display: block;
       background: #FFEEEE;
       color: #CC3333;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      margin-top: 8px;
+      text-align: center;
+    }
+    .info-badge {
+      display: block;
+      background: #EEF4FF;
+      color: #3366AA;
       font-size: 12px;
       padding: 6px 10px;
       border-radius: 8px;
@@ -226,7 +243,7 @@
   </div>
 
   <div class="card">
-    <h2>📋 Daily Plan</h2>
+    <h2>📋 Daily Total</h2>
     <p class="hint" style="margin-bottom:12px;">Tap 🔒 to lock a value — the other auto-calculates</p>
 
     <div class="food-row" id="kibbleRow">
@@ -259,7 +276,7 @@
   </div>
 
   <div class="card">
-    <h2>🥣 Per Meal</h2>
+    <h2>🥣 Meals</h2>
     <div class="form-group">
       <label>Meals per Day</label>
       <div class="stepper">
@@ -268,7 +285,8 @@
         <button id="mealPlus">+</button>
       </div>
     </div>
-    <div id="mealBreakdown"></div>
+    <div id="mealsContainer" style="margin-top:12px;"></div>
+    <div id="mealWarnings"></div>
   </div>
 
   <div class="footer">Based on RER = 70 × weight<sup>0.75</sup> · Always consult your vet.</div>
@@ -276,6 +294,9 @@
 <script>
   let lockedFood = null;
   let numMeals = 2;
+  let mealTypes = ['both', 'both'];
+  const mealLabels = ['Breakfast', 'Lunch', 'Afternoon', 'Dinner', 'Supper', 'Meal 6', 'Meal 7', 'Meal 8', 'Meal 9', 'Meal 10'];
+  const mealEmojis = ['🌅', '☀️', '🌤️', '🌙', '🌃', '🍽️', '🍽️', '🍽️', '🍽️', '🍽️'];
 
   const $ = id => document.getElementById(id);
 
@@ -287,11 +308,7 @@
   }
 
   function toggleLock(food) {
-    if (lockedFood === food) {
-      lockedFood = null;
-    } else {
-      lockedFood = food;
-    }
+    lockedFood = lockedFood === food ? null : food;
     updateLockUI();
     calculate();
   }
@@ -328,6 +345,16 @@
     }
   }
 
+  function setMealType(index, type) {
+    mealTypes[index] = type;
+    calculate();
+  }
+
+  function syncMealTypes() {
+    while (mealTypes.length < numMeals) mealTypes.push('both');
+    while (mealTypes.length > numMeals) mealTypes.pop();
+  }
+
   function calculate() {
     const dailyCal = getDailyCal();
 
@@ -348,14 +375,12 @@
       const kG = parseFloat($('kibbleGrams').value) || 0;
       const kCal = (kG / 1000) * kCalPerKg;
       const remaining = dailyCal - kCal;
-      const wG = Math.max(0, (remaining / wCalPerKg) * 1000);
-      $('wetGrams').value = Math.round(wG);
+      $('wetGrams').value = Math.round(Math.max(0, (remaining / wCalPerKg) * 1000));
     } else if (lockedFood === 'wet' && dailyCal && kCalPerKg > 0) {
       const wG = parseFloat($('wetGrams').value) || 0;
       const wCal = (wG / 1000) * wCalPerKg;
       const remaining = dailyCal - wCal;
-      const kG = Math.max(0, (remaining / kCalPerKg) * 1000);
-      $('kibbleGrams').value = Math.round(kG);
+      $('kibbleGrams').value = Math.round(Math.max(0, (remaining / kCalPerKg) * 1000));
     }
 
     const kGrams = parseFloat($('kibbleGrams').value) || 0;
@@ -367,27 +392,20 @@
     $('kibbleKcalDisplay').textContent = kCalPerKg > 0 ? Math.round(kCal) + ' kcal' : '— kcal';
     $('wetKcalDisplay').textContent = wCalPerKg > 0 ? Math.round(wCal) + ' kcal' : '— kcal';
 
+    // Calorie bar
     if (dailyCal) {
       const pct = Math.min(110, (totalCal / dailyCal) * 100);
       const diff = totalCal - dailyCal;
       let barColor, diffText, diffColor;
 
       if (totalCal === 0) {
-        barColor = '#DDD';
-        diffText = 'Enter food amounts above';
-        diffColor = '#BBB';
+        barColor = '#DDD'; diffText = 'Enter food amounts above'; diffColor = '#BBB';
       } else if (Math.abs(diff) < 5) {
-        barColor = '#6BBF6B';
-        diffText = '✅ Perfect!';
-        diffColor = '#4A9A4A';
+        barColor = '#6BBF6B'; diffText = '✅ Perfect!'; diffColor = '#4A9A4A';
       } else if (diff > 0) {
-        barColor = '#E05555';
-        diffText = '⚠️ ' + Math.round(diff) + ' kcal over target';
-        diffColor = '#CC3333';
+        barColor = '#E05555'; diffText = '⚠️ ' + Math.round(diff) + ' kcal over target'; diffColor = '#CC3333';
       } else {
-        barColor = '#E8A54B';
-        diffText = Math.round(Math.abs(diff)) + ' kcal remaining';
-        diffColor = '#A07050';
+        barColor = '#E8A54B'; diffText = Math.round(Math.abs(diff)) + ' kcal remaining'; diffColor = '#A07050';
       }
 
       $('calBar').innerHTML =
@@ -401,41 +419,65 @@
       $('calBar').innerHTML = '<div class="hint" style="margin-top:8px">Enter cat weight to see calorie target</div>';
     }
 
-    let mealHtml = '<div class="meal-breakdown">';
-    let hasFood = false;
-    if (kGrams > 0) {
-      hasFood = true;
-      mealHtml +=
-        '<div class="meal-box kibble-box">' +
-          '<div class="meal-icon">🥜</div>' +
-          '<div class="meal-val">' + Math.round(kGrams / numMeals) + 'g</div>' +
-          '<div class="meal-label">kibble / meal</div>' +
-        '</div>';
+    // Meal distribution
+    syncMealTypes();
+    let kibbleMeals = 0;
+    let wetMeals = 0;
+    for (let i = 0; i < numMeals; i++) {
+      if (mealTypes[i] === 'kibble' || mealTypes[i] === 'both') kibbleMeals++;
+      if (mealTypes[i] === 'wet' || mealTypes[i] === 'both') wetMeals++;
     }
-    if (wGrams > 0) {
-      hasFood = true;
-      mealHtml +=
-        '<div class="meal-box wet-box">' +
-          '<div class="meal-icon">🥫</div>' +
-          '<div class="meal-val">' + Math.round(wGrams / numMeals) + 'g</div>' +
-          '<div class="meal-label">wet food / meal</div>' +
-        '</div>';
-    }
-    if (!hasFood) {
-      mealHtml += '<div class="hint" style="width:100%;padding:12px">Set food amounts above to see portions</div>';
-    }
-    mealHtml += '</div>';
 
+    let html = '';
+    for (let i = 0; i < numMeals; i++) {
+      const type = mealTypes[i];
+      const kbActive = type === 'kibble' ? 'active-kibble' : '';
+      const wtActive = type === 'wet' ? 'active-wet' : '';
+      const btActive = type === 'both' ? 'active-both' : '';
+
+      const kPerMeal = (type === 'kibble' || type === 'both') && kibbleMeals > 0 ? Math.round(kGrams / kibbleMeals) : 0;
+      const wPerMeal = (type === 'wet' || type === 'both') && wetMeals > 0 ? Math.round(wGrams / wetMeals) : 0;
+
+      html += '<div class="meal-card">';
+      html += '<div class="meal-header">';
+      html += '<div class="meal-title">' + mealEmojis[i] + ' ' + mealLabels[i] + '</div>';
+      html += '<div class="meal-type-btns">';
+      html += '<button class="meal-type-btn ' + kbActive + '" onclick="setMealType(' + i + ',\'kibble\')">🥜</button>';
+      html += '<button class="meal-type-btn ' + wtActive + '" onclick="setMealType(' + i + ',\'wet\')">🥫</button>';
+      html += '<button class="meal-type-btn ' + btActive + '" onclick="setMealType(' + i + ',\'both\')">🥜🥫</button>';
+      html += '</div></div>';
+
+      html += '<div class="meal-portions">';
+      if (type === 'kibble' || type === 'both') {
+        html += '<div class="portion-box"><div class="portion-icon">🥜</div>';
+        html += '<div class="portion-val kibble-color">' + (kGrams > 0 ? kPerMeal + 'g' : '—') + '</div>';
+        html += '<div class="portion-label">kibble</div></div>';
+      }
+      if (type === 'wet' || type === 'both') {
+        html += '<div class="portion-box"><div class="portion-icon">🥫</div>';
+        html += '<div class="portion-val wet-color">' + (wGrams > 0 ? wPerMeal + 'g' : '—') + '</div>';
+        html += '<div class="portion-label">wet food</div></div>';
+      }
+      html += '</div></div>';
+    }
+    $('mealsContainer').innerHTML = html;
+
+    // Warnings
+    let warnings = '';
     if (lockedFood && dailyCal) {
       const lockedG = lockedFood === 'kibble' ? kGrams : wGrams;
       const lockedCPK = lockedFood === 'kibble' ? kCalPerKg : wCalPerKg;
-      const lockedCal = (lockedG / 1000) * lockedCPK;
-      if (lockedCal > dailyCal) {
-        mealHtml += '<div class="warning-badge">⚠️ Locked food alone exceeds daily calorie target</div>';
+      if ((lockedG / 1000) * lockedCPK > dailyCal) {
+        warnings += '<div class="warning-badge">⚠️ Locked food alone exceeds daily calorie target</div>';
       }
     }
-
-    $('mealBreakdown').innerHTML = mealHtml;
+    if (kGrams > 0 && kibbleMeals === 0) {
+      warnings += '<div class="warning-badge">⚠️ You have ' + Math.round(kGrams) + 'g kibble daily but no meals include kibble</div>';
+    }
+    if (wGrams > 0 && wetMeals === 0) {
+      warnings += '<div class="warning-badge">⚠️ You have ' + Math.round(wGrams) + 'g wet food daily but no meals include wet food</div>';
+    }
+    $('mealWarnings').innerHTML = warnings;
   }
 
   $('kibbleLock').addEventListener('click', function() { toggleLock('kibble'); });
@@ -449,10 +491,10 @@
   $('wetGrams').addEventListener('input', calculate);
 
   $('mealMinus').addEventListener('click', function() {
-    if (numMeals > 1) { numMeals--; $('mealCount').textContent = numMeals; calculate(); }
+    if (numMeals > 1) { numMeals--; syncMealTypes(); $('mealCount').textContent = numMeals; calculate(); }
   });
   $('mealPlus').addEventListener('click', function() {
-    if (numMeals < 10) { numMeals++; $('mealCount').textContent = numMeals; calculate(); }
+    if (numMeals < 10) { numMeals++; syncMealTypes(); $('mealCount').textContent = numMeals; calculate(); }
   });
 
   updateLockUI();
